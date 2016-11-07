@@ -53,6 +53,12 @@ var isTweetsAlmostEveryday = function(tweetDates) {
   return differenceInDays.length <= 2 ? true : false;
 }
 
+var tweetsParams = {
+  q: "work",
+  count: 46
+};
+
+//B: RETURN FILTERED TWITTER USER OBJECT 
 var filterUsers = function(listOfUsers, tweetDates) {
   var userObj = {};
   if (listOfUsers) {
@@ -78,11 +84,7 @@ var filterUsers = function(listOfUsers, tweetDates) {
   // console.log(userObj);
   return userObj;
 }
-
-var tweetsParams = {
-  q: "work",
-  count: 46
-};
+//E: RETURN FILTERED TWITTER USER OBJECT
 
 //B: DISPLAY LIMIT STATUS
 T.get('application/rate_limit_status')

@@ -1,6 +1,5 @@
 var moment = require('moment');
 
-
   exports.fithteenDaysBeforeArray = function() {
     var fithteenDaysArr = [];
     var today = moment().format('L');
