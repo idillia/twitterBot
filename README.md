@@ -9,7 +9,7 @@ npm v3.10.3
 
 Twitter auth
 
-module.exports = {
+module.exports = {	
   consumer_key:         '',
   consumer_secret:      '',
   access_token:         '',
@@ -19,6 +19,7 @@ module.exports = {
 
 ### Installing Dependencies
 
+	npm install -g nodemon
 npm install
 
 #### To run server
