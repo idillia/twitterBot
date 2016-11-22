@@ -6,12 +6,12 @@ var utils = require('./utils');
 var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
-// var alData = require('./alData.json');
-// var extract = require('./extractHandler');
+var alData = require('./alData.json');
+var extract = require('./extractHandler');
 
+console.log(extract);
 
-
-var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets', 'ps', 'sw', 'pabs'];
+var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets', 'time_zone'];
 var csv;
 var userList = [];
 
@@ -79,7 +79,6 @@ var filterUsers = function(listOfUsers, tweetDates) {
       var isEveryday = isTweetsAlmostEveryday(tweetDates);
 
       // if(userName && folowersCount && creationDate && userProfileImg && isEveryday){ 
-      // if(userName && creationDate && isEveryday){ 
       if(userName){ 
         console.log("GETTING list of users")
         userObj.id = (listOfUsers[i].id).toString();
@@ -90,9 +89,9 @@ var filterUsers = function(listOfUsers, tweetDates) {
         userObj.image_url = profileImageUrl;
         userObj.tweets = formatDate(tweetDates);
         userObj.timeZone = listOfUsers[i].time_zone;
-        userObj["personal_archetype"] = [];
-        userObj["strength_words"] = [];
-        userObj["personal_archetype_blend_sentences"] = [];
+        // userObj["personal_archetype"] = [];
+        // userObj["strength_words"] = [];
+        // userObj["personal_archetype_blend_sentences"] = [];
       }    
     }
   }
@@ -126,12 +125,6 @@ T.get('application/rate_limit_status')
 //B: GET TWEETS, FIND USER, FILTER
 T.get('users/lookup', userListParams, function(err,data,response) {
   for(var i = 0; i<data.length; i++) { 
-    // console.log(data[i]["screen_name"]);
-    // console.log("re", response)
-    // var timelineParams = {
-    //     user_screen_name: data[i].screen_name,
-    //     count: 1
-    // };
     T.get('statuses/user_timeline', getName(i), function(err,data,response){
       var tweetDates = [];
       var currentUserInfo = data[0].user;
@@ -143,7 +136,7 @@ T.get('users/lookup', userListParams, function(err,data,response) {
         userList.push(filteredUsers);
         
       }
-      console.log(userList);
+      // console.log(userList);
     })
 
   }
