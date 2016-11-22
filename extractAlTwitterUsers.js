@@ -7,11 +7,9 @@ var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
 var alData = require('./alData.json');
-var extract = require('./extractHandler');
 
-console.log(extract);
 
-var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets', 'time_zone'];
+var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'time_zone', 'tweets'];
 var csv;
 var userList = [];
 
@@ -57,11 +55,17 @@ var isTweetsAlmostEveryday = function(tweetDates) {
   return differenceInDays.length <= 2 ? true : false;
 }
 
-var userHandlers = "bridgeunion,scrappymcgyver";
+var userHandlersArray = utils.extractHandlers(alData).slice(250,279);
+var userHandlersParams = userHandlersArray.join();
+console.log("ArrayLength", utils.extractHandlers(alData).length);
 
 var userListParams = {
-  "screen_name": userHandlers
+  "screen_name": userHandlersParams
 };
+
+
+
+console.log(userListParams);
 
 //B: RETURN FILTERED TWITTER USER OBJECT 
 var filterUsers = function(listOfUsers, tweetDates) {
@@ -87,8 +91,12 @@ var filterUsers = function(listOfUsers, tweetDates) {
         userObj.followers = listOfUsers[i].followers_count;
         userObj.creation_date = listOfUsers[i].created_at;
         userObj.image_url = profileImageUrl;
+        userObj.time_zone = listOfUsers[i].time_zone;
+        userObj.creation_date_filter = creationDate;
+        userObj.is_everyday_filter = isEveryday;
+        userObj.folowers_count_filter = folowersCount;
         userObj.tweets = formatDate(tweetDates);
-        userObj.timeZone = listOfUsers[i].time_zone;
+       
         // userObj["personal_archetype"] = [];
         // userObj["strength_words"] = [];
         // userObj["personal_archetype_blend_sentences"] = [];
@@ -101,13 +109,35 @@ var filterUsers = function(listOfUsers, tweetDates) {
 //E: RETURN FILTERED TWITTER USER OBJECT
 
 function getName(counter) {
-var name = userHandlers.split(","); 
-// console.log(name)
   return timelineParams = {
-    screen_name: name[counter],
-    count: 2
+    screen_name: userHandlersArray[counter],
+    count: 85
   };
 }
+
+
+
+//B: GET TWEETS, FIND USER, FILTER
+
+T.get('users/lookup', userListParams, function(err,data,response) {
+  for(var i = 0; i<data.length; i++) { 
+    T.get('statuses/user_timeline', getName(i), function(err,data,response){
+      var tweetDates = [];
+      if(data[0]) {
+        console.log("USER", data[0].user.screen_name);
+        var currentUserInfo = data[0].user;
+        for (var i = 0; i < data.length; i++) {
+          tweetDates.push(data[i].created_at);
+        }
+        var filteredUsers = filterUsers([currentUserInfo], tweetDates);
+        if(filteredUsers.hasOwnProperty('id')) {
+          userList.push(filteredUsers);        
+        }
+      }
+    })
+  }
+})
+//B: GET TWEETS, FIND USER, FILTER  
 
 
 //B: DISPLAY LIMIT STATUS
@@ -121,35 +151,12 @@ T.get('application/rate_limit_status')
 
   });
 //E: DISPLAY LIMIT STATUS
-
-//B: GET TWEETS, FIND USER, FILTER
-T.get('users/lookup', userListParams, function(err,data,response) {
-  for(var i = 0; i<data.length; i++) { 
-    T.get('statuses/user_timeline', getName(i), function(err,data,response){
-      var tweetDates = [];
-      var currentUserInfo = data[0].user;
-      for (var i = 0; i < data.length; i++) {
-        tweetDates.push(data[i].created_at);
-      }
-      var filteredUsers = filterUsers([currentUserInfo], tweetDates);
-      if(filteredUsers.hasOwnProperty('id')) {
-        userList.push(filteredUsers);
-        
-      }
-      // console.log(userList);
-    })
-
-  }
-
-})
- 
-//B: GET TWEETS, FIND USER, FILTER  
    
 //B: SAVE TO CSV FILE
 setTimeout(function(){ 
-  // console.log("USER_LIST2", userList);
-  csv = json2csv({data: userList, fields:fields});
-  fs.writeFile('file.csv', csv, function(err) {
+  // console.log(userList)
+  // csv = json2csv({data: userList, fields:fields});
+  fs.writeFile('file.json', JSON.stringify(userList, null, ' '), 'utf8', function(err) {
     if (err) throw err;
     console.log('file saved');
   });
