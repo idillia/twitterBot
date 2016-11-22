@@ -6,12 +6,12 @@ var utils = require('./utils');
 var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
-var alData = require('./alData.json');
-var extract = require('./extractHandler');
+// var alData = require('./alData.json');
+// var extract = require('./extractHandler');
 
 
 
-var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets'];
+var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets', 'ps', 'sw', 'pabs'];
 var csv;
 var userList = [];
 
@@ -57,9 +57,10 @@ var isTweetsAlmostEveryday = function(tweetDates) {
   return differenceInDays.length <= 2 ? true : false;
 }
 
-var tweetsParams = {
-  q: "work",
-  count: 46
+var userHandlers = "bridgeunion,scrappymcgyver";
+
+var userListParams = {
+  "screen_name": userHandlers
 };
 
 //B: RETURN FILTERED TWITTER USER OBJECT 
@@ -78,7 +79,8 @@ var filterUsers = function(listOfUsers, tweetDates) {
       var isEveryday = isTweetsAlmostEveryday(tweetDates);
 
       // if(userName && folowersCount && creationDate && userProfileImg && isEveryday){ 
-      if(userName && creationDate){ 
+      // if(userName && creationDate && isEveryday){ 
+      if(userName){ 
         console.log("GETTING list of users")
         userObj.id = (listOfUsers[i].id).toString();
         userObj.screen_name = listOfUsers[i].screen_name;
@@ -87,6 +89,10 @@ var filterUsers = function(listOfUsers, tweetDates) {
         userObj.creation_date = listOfUsers[i].created_at;
         userObj.image_url = profileImageUrl;
         userObj.tweets = formatDate(tweetDates);
+        userObj.timeZone = listOfUsers[i].time_zone;
+        userObj["personal_archetype"] = [];
+        userObj["strength_words"] = [];
+        userObj["personal_archetype_blend_sentences"] = [];
       }    
     }
   }
@@ -95,52 +101,55 @@ var filterUsers = function(listOfUsers, tweetDates) {
 }
 //E: RETURN FILTERED TWITTER USER OBJECT
 
+function getName(counter) {
+var name = userHandlers.split(","); 
+// console.log(name)
+  return timelineParams = {
+    screen_name: name[counter],
+    count: 2
+  };
+}
+
+
 //B: DISPLAY LIMIT STATUS
 T.get('application/rate_limit_status')
   .catch(function(err) {
     console.log("limit_rate_error: ", err.stack)
   })
   .then(function(result) {
-    console.log("SEARCH_TWEETS_LIMIT: ",  JSON.stringify(result.data.resources.search));
+    console.log("SEARCH_USERS_LIMIT: ",  JSON.stringify(result.data.resources.users["/users/lookup"]));
     console.log("STATUSES_USER_TIMELINE: ",JSON.stringify(result.data.resources.statuses['/statuses/user_timeline']));
+
   });
 //E: DISPLAY LIMIT STATUS
 
 //B: GET TWEETS, FIND USER, FILTER
-T.get('search/tweets', tweetsParams) // Gett all tweets that has a specific key words
-  .catch(function (err) {
-    console.log('caught error', err.stack)
-  })
-  .then(function(result) {
-    var userIds = getIdFromTweets(result.data); // Get list of usersIds
-    return userIds;
-  })
-  .then(function (res) {
-    // console.log("is result passed: ", res);
-    for(var i = 0; i<res.length; i++) {
-      // console.log("user_id: ", res[i]); 
-      var timelineParams = {
-        user_id: res[i],
-        count: 85
-      };
-      T.get('statuses/user_timeline', timelineParams)
-        .catch(function (err) {
-          console.log('caught error', err.stack)
-        })
-        .then (function(result) {        
-          var currentUserInfo = result.data[0].user;
+T.get('users/lookup', userListParams, function(err,data,response) {
+  for(var i = 0; i<data.length; i++) { 
+    // console.log(data[i]["screen_name"]);
+    // console.log("re", response)
+    // var timelineParams = {
+    //     user_screen_name: data[i].screen_name,
+    //     count: 1
+    // };
+    T.get('statuses/user_timeline', getName(i), function(err,data,response){
+      var tweetDates = [];
+      var currentUserInfo = data[0].user;
+      for (var i = 0; i < data.length; i++) {
+        tweetDates.push(data[i].created_at);
+      }
+      var filteredUsers = filterUsers([currentUserInfo], tweetDates);
+      if(filteredUsers.hasOwnProperty('id')) {
+        userList.push(filteredUsers);
+        
+      }
+      console.log(userList);
+    })
 
-          var tweetDates = [];
-          for (var i = 0; i<result.data.length; i++) {
-            tweetDates.push(result.data[i].created_at);
-          }
-          var filteredUsers = filterUsers([currentUserInfo], tweetDates);
-          if(filteredUsers.hasOwnProperty('id')) {
-            userList.push(filteredUsers);
-          }
-        })
-    }
-  });
+  }
+
+})
+ 
 //B: GET TWEETS, FIND USER, FILTER  
    
 //B: SAVE TO CSV FILE
@@ -153,7 +162,6 @@ setTimeout(function(){
   });
 }, 10000);
 //E: SAVE TO CSV FILE
-
 
 
 
