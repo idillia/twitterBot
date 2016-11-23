@@ -1,5 +1,7 @@
 var moment = require('moment');
 var alUsers = require('./alData');
+var fs = require('fs');
+
 
 
 exports.fithteenDaysBeforeArray = function() {
@@ -34,6 +36,25 @@ exports.extractHandlers = function(json) {
   }
   return twitHandlers;
 } 
+
+
+var createListOfUsers = function(json) {
+  var twitHandlers = [];
+  var handler ='';
+  for(var i=0; i<json.length; i++) {
+    var goodcoLink = 'http://goodco.company/profile/'
+    handler = json[i]["al_twitter_link"].replace(regex, '').replace(regexEnd, '');
+    goodcoLink += handler; 
+    twitHandlers.push(goodcoLink);
+  }
+    fs.writeFile('goodcoLink.json', JSON.stringify(twitHandlers, null, ' '), 'utf8', function(err) {
+    if (err) throw err;
+    console.log('file saved');
+  });
+
+} 
+
+createListOfUsers(alUsers);
 
 
 
