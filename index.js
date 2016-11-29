@@ -7,9 +7,21 @@ var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
 
-var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets'];
+var fields = ['id', 'screen_name', 'name', 'lang', 'searched_keyword' 'creation_date', 'followers', 'following', 'has_not_changed_background', 'has_not_changed_profile_image', 'bio', 'image_url', 'last_tweet_time', 'statues_count', 'geo_enabled', 'location', 'time_zone', 'favourites_count', 'verified', 'protected'];
 var csv;
 var userList = [];
+
+var aviodWordsInName = ["inc", "co", "llp", "lllp", "llc", "pllc", "lab", "labs", "corp", "ltd", "gmbh", "dba", "lc", "company", "pc", "p\.c\."];
+
+var createRegex = function(noWords) {
+  var regexArray = [];
+  for (var i =0; i<noWords.length; i++) {
+    regexArray.push(new RegExp('\\b' + noWords[i] + '\\b', 'gi'));
+  }
+  return regexArray;
+}(aviodWordsInName);
+
+
 
 var followersLimit = function(numOfFollowers) {
   if (numOfFollowers > 100 && numOfFollowers <1000) {
@@ -18,9 +30,15 @@ var followersLimit = function(numOfFollowers) {
   return false;
 };
 
-var splitName = function(userName) {
-  if (userName.split(' ').length > 1) {
-    return userName;
+var sanitizeName = function(userName, noWords) {
+  var words = userName.split(' ');
+  if (words.length > 1 && words.length <= 3) {
+    for (var i=0; i<noWords.length; i++) {
+      if(userName.match(noWords[i])) {
+        break;
+      }
+    }
+    return true;
   }
   return false;
 };
@@ -53,31 +71,45 @@ var isTweetsAlmostEveryday = function(tweetDates) {
   return differenceInDays.length <= 2 ? true : false;
 }
 
-var tweetsParams = {
-  q: "work",
-  count: 46
-};
+var isEngligsh(userLang) {
+  if (userLang === "en") {
+    return true;
+  }
+  return false;
+}
+
 
 //B: RETURN FILTERED TWITTER USER OBJECT 
 var filterUsers = function(listOfUsers, tweetDates) {
   var userObj = {};
   if (listOfUsers) {
     for (var i= 0; i <listOfUsers.length; i++) {
-      var userName = splitName(listOfUsers[i].name);
-      var folowersCount = followersLimit(listOfUsers[i].followers_count);
-      var creationDate = created6MonthMore(listOfUsers[i].created_at);
-      var userProfileImg = listOfUsers[i].profile_image_url;
-      var isEveryday = isTweetsAlmostEveryday(tweetDates);
+      var userName = sanitizeName(listOfUsers[i].name);
+      var userLang = isEngligsh(listOfUsers[i].lang);
 
-      if(userName && folowersCount && creationDate && userProfileImg && isEveryday){ 
+      if(userName && userLang){ 
         console.log("GETTING list of users")
         userObj.id = (listOfUsers[i].id).toString();
         userObj.screen_name = listOfUsers[i].screen_name;
         userObj.name = listOfUsers[i].name;
-        userObj.followers = listOfUsers[i].followers_count;
+        userObj.lang = listOfUsers[i].lang;
+        userObj.searched_keyword = "MBTI";
         userObj.creation_date = listOfUsers[i].created_at;
+        userObj.followers = listOfUsers[i].followers_count;
+        userObj.following = listOfUsers[i].friends_count;
+        userObj.has_not_changed_background = listOfUsers[i].default_profile;
+        userObj.has_not_changed_profile_image = listOfUsers[i].default_profile_image;
+        userObj.bio = listOfUsers[i].description;
         userObj.image_url = listOfUsers[i].profile_image_url;
-        userObj.tweets = formatDate(tweetDates);
+        userObj.last_tweet_time = listOfUsers[i].status.created_at;
+        userObj.statues_count = listOfUsers[i].statues_count;
+        // userObj.tweets = formatDate(tweetDates);
+        userObj.geo_enabled = listOfUsers[i].geo_enabled;
+        userObj.location = listOfUsers[i].location;
+        userObj.time_zone = listOfUsers[i].time_zone;
+        userObj.favourites_count = listOfUsers[i].favourites_count;
+        userObj.verified = listOfUsers[i].verified;
+        userObj.protected = listOfUsers[i].protected;
       }    
     }
   }
@@ -85,6 +117,8 @@ var filterUsers = function(listOfUsers, tweetDates) {
   return userObj;
 }
 //E: RETURN FILTERED TWITTER USER OBJECT
+
+
 
 //B: DISPLAY LIMIT STATUS
 T.get('application/rate_limit_status')
