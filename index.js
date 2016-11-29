@@ -6,8 +6,12 @@ var utils = require('./utils');
 var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
+var mbti_users = require("./mbti_users");
+var temp = mbti_users.mbti_users.splice(0,5).join(', ');
+console.log (temp);
 
-var fields = ['id', 'screen_name', 'name', 'lang', 'searched_keyword' 'creation_date', 'followers', 'following', 'has_not_changed_background', 'has_not_changed_profile_image', 'bio', 'image_url', 'last_tweet_time', 'statues_count', 'geo_enabled', 'location', 'time_zone', 'favourites_count', 'verified', 'protected'];
+
+var fields = ['id', 'screen_name', 'name', 'lang', 'searched_keyword', 'creation_date', 'followers', 'following', 'has_not_changed_background', 'has_not_changed_profile_image', 'bio', 'image_url', 'last_tweet_time', 'statues_count', 'geo_enabled', 'location', 'time_zone', 'favourites_count', 'verified', 'protected'];
 var csv;
 var userList = [];
 
@@ -33,11 +37,11 @@ var followersLimit = function(numOfFollowers) {
 var sanitizeName = function(userName, noWords) {
   var words = userName.split(' ');
   if (words.length > 1 && words.length <= 3) {
-    for (var i=0; i<noWords.length; i++) {
-      if(userName.match(noWords[i])) {
-        break;
-      }
-    }
+    // for (var i=0; i<noWords.length; i++) {
+    //   if(userName.match(noWords[i])) {
+    //     break;
+    //   }
+    // }
     return true;
   }
   return false;
@@ -71,7 +75,7 @@ var isTweetsAlmostEveryday = function(tweetDates) {
   return differenceInDays.length <= 2 ? true : false;
 }
 
-var isEngligsh(userLang) {
+var isEngligsh = function(userLang) {
   if (userLang === "en") {
     return true;
   }
@@ -80,11 +84,12 @@ var isEngligsh(userLang) {
 
 
 //B: RETURN FILTERED TWITTER USER OBJECT 
-var filterUsers = function(listOfUsers, tweetDates) {
+var filterUsers = function(listOfUsers) {
   var userObj = {};
   if (listOfUsers) {
+
     for (var i= 0; i <listOfUsers.length; i++) {
-      var userName = sanitizeName(listOfUsers[i].name);
+      var userName = sanitizeName(listOfUsers[i].name, createRegex);
       var userLang = isEngligsh(listOfUsers[i].lang);
 
       if(userName && userLang){ 
@@ -103,7 +108,6 @@ var filterUsers = function(listOfUsers, tweetDates) {
         userObj.image_url = listOfUsers[i].profile_image_url;
         userObj.last_tweet_time = listOfUsers[i].status.created_at;
         userObj.statues_count = listOfUsers[i].statues_count;
-        // userObj.tweets = formatDate(tweetDates);
         userObj.geo_enabled = listOfUsers[i].geo_enabled;
         userObj.location = listOfUsers[i].location;
         userObj.time_zone = listOfUsers[i].time_zone;
@@ -113,7 +117,7 @@ var filterUsers = function(listOfUsers, tweetDates) {
       }    
     }
   }
-  // console.log(userObj);
+  console.log(userObj);
   return userObj;
 }
 //E: RETURN FILTERED TWITTER USER OBJECT
@@ -126,46 +130,28 @@ T.get('application/rate_limit_status')
     console.log("limit_rate_error: ", err.stack)
   })
   .then(function(result) {
-    console.log("SEARCH_TWEETS_LIMIT: ",  JSON.stringify(result.data.resources.search));
-    console.log("STATUSES_USER_TIMELINE: ",JSON.stringify(result.data.resources.statuses['/statuses/user_timeline']));
+    console.log("USERS-LOOKUP: ",  JSON.stringify(result.data.resources.users["/users/lookup"]));
+    // console.log("STATUSES_USER_TIMELINE: ",JSON.stringify(result.data.resources.statuses['/statuses/user_timeline']));
   });
 //E: DISPLAY LIMIT STATUS
 
+var limitHundred = mbti_users.mbti_users.splice(0,2).join(', ');
+
+var userLookUpParams = {
+  screen_name: limitHundred
+}
+
+
 //B: GET TWEETS, FIND USER, FILTER
-T.get('search/tweets', tweetsParams) // Gett all tweets that has a specific key words
+
+T.get('users/lookup', userLookUpParams)
   .catch(function (err) {
     console.log('caught error', err.stack)
   })
-  .then(function(result) {
-    var userIds = getIdFromTweets(result.data); // Get list of usersIds
-    return userIds;
+  .then (function(result) {     
+    // console.log("currentUserInfo:", result.data);  
+    userList = filterUsers(result.data);
   })
-  .then(function (res) {
-    // console.log("is result passed: ", res);
-    for(var i = 0; i<res.length; i++) {
-      // console.log("user_id: ", res[i]); 
-      var timelineParams = {
-        user_id: res[i],
-        count: 85
-      };
-      T.get('statuses/user_timeline', timelineParams)
-        .catch(function (err) {
-          console.log('caught error', err.stack)
-        })
-        .then (function(result) {        
-          var currentUserInfo = result.data[0].user;
-
-          var tweetDates = [];
-          for (var i = 0; i<result.data.length; i++) {
-            tweetDates.push(result.data[i].created_at);
-          }
-          var filteredUsers = filterUsers([currentUserInfo], tweetDates);
-          if(filteredUsers.hasOwnProperty('id')) {
-            userList.push(filteredUsers);
-          }
-        })
-    }
-  });
 //B: GET TWEETS, FIND USER, FILTER  
    
 //B: SAVE TO CSV FILE
@@ -178,7 +164,6 @@ setTimeout(function(){
   });
 }, 10000);
 //E: SAVE TO CSV FILE
-
 
 
 
