@@ -12,7 +12,7 @@ var infj_users = require("./infj_users");
 
 
 
-var fields = ['id', 'screen_name', 'name', 'lang', 'searched_keyword', 'creation_date', 'followers', 'following', 'has_not_changed_background', 'has_not_changed_profile_image', 'bio', 'image_url', 'last_tweet_time', 'statues_count', 'geo_enabled', 'location', 'time_zone', 'favourites_count', 'verified', 'protected'];
+var fields = ['id', 'screen_name', 'name', 'lang', 'searched_keyword', 'creation_date', 'followers', 'following', 'has_not_changed_background', 'has_not_changed_profile_image', 'bio', 'image_url', 'last_tweet_time', 'statues_count', 'geo_enabled', 'location', 'time_zone', 'favourites_count', 'verified', 'protected'cd ];
 var csv;
 var userList = [];
 
@@ -131,7 +131,7 @@ var filterUsers = function(listOfUsers) {
           userObj.screen_name = listOfUsers[i].screen_name;
           userObj.name = listOfUsers[i].name;
           userObj.lang = listOfUsers[i].lang;
-          userObj.searched_keyword = "MBTI";
+          userObj.searched_keyword = "XXXXX";
           userObj.creation_date = listOfUsers[i].created_at;
           userObj.followers = listOfUsers[i].followers_count;
           userObj.following = listOfUsers[i].friends_count;
@@ -194,18 +194,33 @@ T.get('users/lookup', userLookUpParams)
     // console.log("userlist", userList)
   })
 //B: GET TWEETS, FIND USER, FILTER  
- 
-//B: SAVE TO CSV FILE
+
+
+//B: SAVE TO JSON FILE
 setTimeout(function(){ 
-  // console.log("USER_LIST2", userList);
-  csv = json2csv({data: userList, fields:fields});
-  fs.writeFile('file.csv', csv, {'flags': 'a'}, function(err) {
+  // console.log(userList)
+  // csv = json2csv({data: userList, fields:fields});
+  fs.writeFile('file.json', JSON.stringify(userList, null, ' '), 'utf8', function(err) {
     if (err) throw err;
     console.log('file saved');
   });
-}, 5000);
-//E: SAVE TO CSV FILE
->>>>>>> 31edaa4e8b407e8d3710fd36a8b5ac323dae385a
+}, 1000);
+//E: SAVE TO JSON FILE
+
+
+
+ 
+// //B: SAVE TO CSV FILEsg
+// setTimeout(function(){ 
+//   // console.log("USER_LIST2", userList);
+//   csv = json2csv({data: userList, fields:fields});
+//   fs.writeFile('file.csv', csv, {'flags': 'a'}, function(err) {
+//     if (err) throw err;
+//     console.log('file saved');
+//   });
+// }, 5000);
+// //E: SAVE TO CSV FILE
+
 
 
 
