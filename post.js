@@ -5,19 +5,13 @@ var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
 var csv2json = require("csv2json");
-// var json = require("./JSON.json");
+var readyTweetUsers = require("./snap_path_users.json");
 var fs = require('fs');
 
 // fs.createReadStream('file.csv')
 // .pipe(csv2json({
 // }))
 // .pipe(fs.createWriteStream('JSON.json'));
-
-// var uniqueUserList = _.uniq(json, function(item, key, id){
-//   return item.id;
-// });
-// console.log(uniqueUserList);
-
 
 
 var screen_name = "@bridgeunion";
@@ -27,12 +21,19 @@ var today = moment().format('LLL');
 
 
 
-tweetStrenghCard();
+
+// tweetStrenghCardWithMedia(readyTweetUsers);
 
 
-function tweetStrenghCard() {
+function tweetStrenghCardWithMedia(users, i) {
+  var screen_name;
+  var url;
 
-    var filename = "scrappy.png";
+    screen_name = '' + users.users[i]['screen_name'];
+    url = "http://goodco.company/" + screen_name;
+   
+
+    var filename = "images/snapshots/" + screen_name + ".png";
     var params = {
       encoding: 'base64'
     }
@@ -57,32 +58,56 @@ function tweetStrenghCard() {
           console.log("Posted!")
         }
       }
+    }
+    userNum ++;
+    console.log(userNum);
+} 
+
+
+
+var userNum = 0;
+var maxNum = 3;
+  
+
+setInterval(function() { 
+  if(userNum < maxNum) {
+    // tweetStrenghCardTextOnly(readyTweetUsers, userNum)
+    tweetStrenghCardWithMedia(readyTweetUsers, userNum)
+  } else {
+    console.log("exiting");
+    clearInterval();
   }
 
-  // var screen_name;
-  // var url;
+}, 5000);
+
+function tweetStrenghCardTextOnly(users, i) {
   
-  // for(var i =0; i<users.length; i++) {
-  //   screen_name = '@' + users['screen_name'];
-  //   url = users['strength_card_url'];
-  // }
-
-
-  // var tweet = {
-  //   status: screen_name + " Based on your INTJ personality, we crated a Strength Card for you " + url
-  // }
+  var screen_name;
+  var url;
   
-  // // setInterval(..., 1000*60);
+    // for(var i = 0; i < 3; i++) {
+      screen_name = '' + users.users[i]['screen_name'];
+      url = "http://goodco.company/" + screen_name;
+   
 
-  // T.post('statuses/update', tweet, tweeted);
-
-  // function tweeted(err, data, response) {
-  //   if (err) {
-  //     console.log("OH NO some error, ", err)
-  //   } else {
-  //     console.log("Posted!")
-  //   }
+    var tweet = {
+      status: screen_name + " Based on your personality, we crated a Strength Card for you " + url
+    }
+    console.log(screen_name, url, tweet);
+    // T.post('statuses/update', tweet, tweeted);
+    T.post('statuses/update', tweet, tweeted)
+ 
+    function tweeted(err, data, response) {
+      if (err) {
+        console.log("OH NO some error, ", err)
+      } else {
+        console.log("Posted!")
+      }
+    }
   // }
-}
+  userNum ++;
+  console.log(userNum);
+}   
+
 
 
