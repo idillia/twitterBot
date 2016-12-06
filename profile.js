@@ -3,13 +3,14 @@ var webshot = require('webshot');
 var options = {
   renderDelay: 10000,
   screenSize: {
-    width: 500
-  , height: 565
+    width: 500,
+    height: 485
   },
-   shotSize: {
-    width: 500
-  , height: 545
-  }
+  shotSize: {
+    width: 500,
+    height: 485
+  },
+  streamType: "jpg"
 }
 
 
