@@ -5,7 +5,7 @@ var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
 var csv2json = require("csv2json");
-var json = require("./JSON.json");
+// var json = require("./JSON.json");
 var fs = require('fs');
 
 // fs.createReadStream('file.csv')
@@ -13,9 +13,9 @@ var fs = require('fs');
 // }))
 // .pipe(fs.createWriteStream('JSON.json'));
 
-var uniqueUserList = _.uniq(json, function(item, key, id){
-  return item.id;
-});
+// var uniqueUserList = _.uniq(json, function(item, key, id){
+//   return item.id;
+// });
 // console.log(uniqueUserList);
 
 
@@ -32,7 +32,7 @@ tweetStrenghCard();
 
 function tweetStrenghCard() {
 
-    var filename = "sc.png";
+    var filename = "scrappy.png";
     var params = {
       encoding: 'base64'
     }
