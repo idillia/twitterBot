@@ -44,7 +44,7 @@ function tweetStrenghCard() {
     function uploaded(err, data, response) {
       var id = data.media_id_string;
       var tweet = {
-        status: screen_name + " Based on your INTJ personality, we crated a Strength Card for you " + url,
+        status: screen_name + " Based on your personality, we crated a Strength Card for you " + url,
         media_ids: [id]
       }
     
