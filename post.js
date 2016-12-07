@@ -26,8 +26,8 @@ console.log(today);
 
 setInterval(function() { 
   if(userNum < maxNum) {
-    // tweetStrenghCardTextOnly(readyTweetUsers, userNum)
-    tweetStrenghCardWithMedia(readyTweetUsers, userNum)
+    tweetStrenghCardTextOnly(readyTweetUsers, userNum)
+    // tweetStrenghCardWithMedia(readyTweetUsers, userNum)
   } else {
     console.log("exiting");
     clearInterval();
@@ -85,7 +85,7 @@ function tweetStrenghCardWithMedia(users, i) {
 var userNum = 0;
 var maxNum = 3;
   
-
+Hi {twitter handle}, based on your friends’ answers we have created a strength profile for you. Is this accurate? {link}
 
 
 function tweetStrenghCardTextOnly(users, i) {
@@ -98,7 +98,7 @@ function tweetStrenghCardTextOnly(users, i) {
    
 
     var tweet = {
-      status: screen_name + " Based on your personality, we crated a Strength Card for you " + url
+      status: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url
     }
     console.log(screen_name, url, tweet);
     // T.post('statuses/update', tweet, tweeted);
