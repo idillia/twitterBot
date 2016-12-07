@@ -5,8 +5,11 @@ var fs = require('fs');
 var T = new Twit(config);
 var _ = require('underscore');
 var csv2json = require("csv2json");
-var readyTweetUsers = require("./snap_path_users.json");
+// var readyTweetUsers = require("./snap_path_users.json");
 var fs = require('fs');
+
+var file = './snap_path_users.json';
+var readyTweetUsers = require(file);
 
 // fs.createReadStream('file.csv')
 // .pipe(csv2json({
@@ -17,12 +20,20 @@ var fs = require('fs');
 var screen_name = "@bridgeunion";
 var url = "goodco.company/scrappymcgyver";
 var today = moment().format('LLL');
-// console.log(today);
+console.log(today);
 
 
 
+setInterval(function() { 
+  if(userNum < maxNum) {
+    // tweetStrenghCardTextOnly(readyTweetUsers, userNum)
+    tweetStrenghCardWithMedia(readyTweetUsers, userNum)
+  } else {
+    console.log("exiting");
+    clearInterval();
+  }
 
-// tweetStrenghCardWithMedia(readyTweetUsers);
+}, 5000);
 
 
 function tweetStrenghCardWithMedia(users, i) {
@@ -59,6 +70,12 @@ function tweetStrenghCardWithMedia(users, i) {
         }
       }
     }
+
+    readyTweetUsers.users[i].posted_time = today;
+    readyTweetUsers.users[i].status_action = "PostedMedia"
+    fs.writeFile(file, JSON.stringify(readyTweetUsers, null, 2), function (err) {
+      if (err) return console.log(err);
+    });
     userNum ++;
     console.log(userNum);
 } 
@@ -69,23 +86,13 @@ var userNum = 0;
 var maxNum = 3;
   
 
-setInterval(function() { 
-  if(userNum < maxNum) {
-    // tweetStrenghCardTextOnly(readyTweetUsers, userNum)
-    tweetStrenghCardWithMedia(readyTweetUsers, userNum)
-  } else {
-    console.log("exiting");
-    clearInterval();
-  }
 
-}, 5000);
 
 function tweetStrenghCardTextOnly(users, i) {
   
   var screen_name;
   var url;
   
-    // for(var i = 0; i < 3; i++) {
       screen_name = '' + users.users[i]['screen_name'];
       url = "http://goodco.company/" + screen_name;
    
@@ -104,7 +111,12 @@ function tweetStrenghCardTextOnly(users, i) {
         console.log("Posted!")
       }
     }
-  // }
+    
+    readyTweetUsers.users[i].posted_time = today;
+    readyTweetUsers.users[i].status_action = "PostedTextOnly"
+    fs.writeFile(file, JSON.stringify(readyTweetUsers, null, 2), function (err) {
+      if (err) return console.log(err);
+    });
   userNum ++;
   console.log(userNum);
 }   
