@@ -33,7 +33,7 @@ setInterval(function() {
     clearInterval();
   }
 
-}, 5000);
+}, 0);
 
 
 function tweetStrenghCardWithMedia(users, i) {
@@ -82,10 +82,9 @@ function tweetStrenghCardWithMedia(users, i) {
 
 
 
-var userNum = 0;
-var maxNum = 3;
+var userNum = 100;
+var maxNum = 200;
   
-Hi {twitter handle}, based on your friends’ answers we have created a strength profile for you. Is this accurate? {link}
 
 
 function tweetStrenghCardTextOnly(users, i) {
@@ -98,19 +97,26 @@ function tweetStrenghCardTextOnly(users, i) {
    
 
     var tweet = {
-      status: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url
+      status1: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url,
+      status2: "Hey @" + screen_name + ", we have analyzed your twitter feed and created a psychometric profile for you. Is this correct? " + url,
+      status3: "Hey @" + screen_name + ", we created a personality profile for you. Does this really describe you? " + url,
+      status4: "Hey @" + screen_name + ", here are your hidden personality strength. Is this close to the truth? " + url
+
     }
-    console.log(screen_name, url, tweet);
-    // T.post('statuses/update', tweet, tweeted);
-    T.post('statuses/update', tweet, tweeted)
+    console.log(tweet.status1);
+    console.log(tweet.status2);
+    console.log(tweet.status3);
+    console.log(tweet.status4);
+  //   // T.post('statuses/update', tweet, tweeted);
+  //   T.post('statuses/update', tweet, tweeted)
  
-    function tweeted(err, data, response) {
-      if (err) {
-        console.log("OH NO some error, ", err)
-      } else {
-        console.log("Posted!")
-      }
-    }
+  //   function tweeted(err, data, response) {
+  //     if (err) {
+  //       console.log("OH NO some error, ", err)
+  //     } else {
+  //       console.log("Posted!")
+  //     }
+  //   }
     
     readyTweetUsers.users[i].posted_time = today;
     readyTweetUsers.users[i].status_action = "PostedTextOnly"
@@ -120,6 +126,4 @@ function tweetStrenghCardTextOnly(users, i) {
   userNum ++;
   console.log(userNum);
 }   
-
-
 
