@@ -22,17 +22,17 @@ var url = "goodco.company/scrappymcgyver";
 var today = moment().format('LLL');
 console.log(today);
 
-
+var userNum = 100;
+var maxNum = 200;
 
 setInterval(function() { 
   if(userNum < maxNum) {
-    tweetStrenghCardTextOnly(readyTweetUsers, userNum)
-    // tweetStrenghCardWithMedia(readyTweetUsers, userNum)
+    // tweetStrenghCardTextOnly(readyTweetUsers, userNum)
+    tweetStrenghCardWithMedia(readyTweetUsers, userNum)
   } else {
     console.log("exiting");
     clearInterval();
   }
-
 }, 0);
 
 
@@ -42,34 +42,46 @@ function tweetStrenghCardWithMedia(users, i) {
 
     screen_name = '' + users.users[i]['screen_name'];
     url = "http://goodco.company/" + screen_name;
+
+    var tweet = {
+      status1: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url,
+      status2: "Hey @" + screen_name + ", we have analyzed your twitter feed and created a psychometric profile for you. Is this correct? " + url,
+      status3: "Hey @" + screen_name + ", we created a personality profile for you. Does this really describe you? " + url,
+      status4: "Hey @" + screen_name + ", here are your hidden personality strength. Is this close to the truth? " + url
+
+    }
+    console.log(tweet.status1);
+    console.log(tweet.status2);
+    console.log(tweet.status3);
+    console.log(tweet.status4);
    
 
-    var filename = "images/snapshots/" + screen_name + ".png";
-    var params = {
-      encoding: 'base64'
-    }
-    var b64 = fs.readFileSync(filename, params);
+    // var filename = "images/snapshots/" + screen_name + ".png";
+    // var params = {
+    //   encoding: 'base64'
+    // }
+    // var b64 = fs.readFileSync(filename, params);
 
-    T.post('media/upload', {media_data: b64}, uploaded);
+    // T.post('media/upload', {media_data: b64}, uploaded);
   
   
-    function uploaded(err, data, response) {
-      var id = data.media_id_string;
-      var tweet = {
-        status: screen_name + " Based on your personality, we crated a Strength Card for you " + url,
-        media_ids: [id]
-      }
+    // function uploaded(err, data, response) {
+    //   var id = data.media_id_string;
+    //   var tweet = {
+    //     status: screen_name + " Based on your personality, we crated a Strength Card for you " + url,
+    //     media_ids: [id]
+    //   }
     
-      T.post('statuses/update', tweet, tweeted);
+    //   T.post('statuses/update', tweet, tweeted);
 
-      function tweeted(err, data, response) {
-        if (err) {
-          console.log("OH NO some error, ", err)
-        } else {
-          console.log("Posted!")
-        }
-      }
-    }
+    //   function tweeted(err, data, response) {
+    //     if (err) {
+    //       console.log("OH NO some error, ", err)
+    //     } else {
+    //       console.log("Posted!")
+    //     }
+    //   }
+    // }
 
     readyTweetUsers.users[i].posted_time = today;
     readyTweetUsers.users[i].status_action = "PostedMedia"
@@ -79,13 +91,6 @@ function tweetStrenghCardWithMedia(users, i) {
     userNum ++;
     console.log(userNum);
 } 
-
-
-
-var userNum = 100;
-var maxNum = 200;
-  
-
 
 function tweetStrenghCardTextOnly(users, i) {
   
