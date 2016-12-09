@@ -1,6 +1,6 @@
 var _ = require('underscore');
 
-var json = require("./snap_users.json");
+var json = require("./snap_path_users.json");
 var fs = require('fs');
 var webshot = require('webshot');
 
@@ -18,8 +18,8 @@ var options = {
 
 var snapshot = function(users){
   var str;
-  for (var j = 190; j < 210; j++) {
-    console.log(users.users[j].name)
+  for (var j = 300; j < 310; j++) {
+    console.log(users.users[j].screen_name)
     users.users[j].prof_snapshot = 'images/snapshots/' + users.users[j].screen_name + '.png';
 
     webshot('http://localhost:3000/screenshot/' + users.users[j].screen_name, 'images/snapshots/' + users.users[j].screen_name + '.png', options, function(err) {

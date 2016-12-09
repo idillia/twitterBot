@@ -22,8 +22,8 @@ var url = "goodco.company/scrappymcgyver";
 var today = moment().format('LLL');
 console.log(today);
 
-var userNum = 100;
-var maxNum = 200;
+var userNum = 195;
+var maxNum = 250;
 
 setInterval(function() { 
   if(userNum < maxNum) {
@@ -47,7 +47,7 @@ function tweetStrenghCardWithMedia(users, i) {
       status1: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url,
       status2: "Hey @" + screen_name + ", we have analyzed your twitter feed and created a psychometric profile for you. Is this correct? " + url,
       status3: "Hey @" + screen_name + ", we created a personality profile for you. Does this really describe you? " + url,
-      status4: "Hey @" + screen_name + ", here are your hidden personality strength. Is this close to the truth? " + url
+      status4: "Hey @" + screen_name + ", here is your hidden personality strength. Is this close to the truth? " + url
 
     }
     console.log(tweet.status1);
@@ -105,7 +105,7 @@ function tweetStrenghCardTextOnly(users, i) {
       status1: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url,
       status2: "Hey @" + screen_name + ", we have analyzed your twitter feed and created a psychometric profile for you. Is this correct? " + url,
       status3: "Hey @" + screen_name + ", we created a personality profile for you. Does this really describe you? " + url,
-      status4: "Hey @" + screen_name + ", here are your hidden personality strength. Is this close to the truth? " + url
+      status4: "Hey @" + screen_name + ", here is your hidden personality strength. Is this close to the truth? " + url
 
     }
     console.log(tweet.status1);
