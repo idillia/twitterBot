@@ -22,8 +22,8 @@ var url = "goodco.company/scrappymcgyver";
 var today = moment().format('LLL');
 console.log(today);
 
-var userNum =780;
-var maxNum = 800;
+var userNum =800;
+var maxNum = 820;
 
 setInterval(function() { 
   if(userNum < maxNum) {

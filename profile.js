@@ -5,9 +5,9 @@ var fs = require('fs');
 var webshot = require('webshot');
 
 var options = {
-  renderDelay: 20000,
+  renderDelay: 30000,
   screenSize: {
-    width: 500,
+    width: 500,     
     height: 485
   },
   shotSize: {
@@ -19,7 +19,7 @@ console.log("size: ", json.users.length)
 
 var snapshot = function(users){
   var str;
-  for (var j = 780; j < 800; j++) {
+  for (var j = 800; j < 810; j++) {
     console.log(users.users[j].screen_name)
     users.users[j].prof_snapshot = 'images/snapshots/' + users.users[j].screen_name + '.png';
 
