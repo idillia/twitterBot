@@ -5,7 +5,7 @@ var fs = require('fs');
 var webshot = require('webshot');
 
 var options = {
-  renderDelay: 15000,
+  renderDelay: 20000,
   screenSize: {
     width: 500,
     height: 485
@@ -15,14 +15,15 @@ var options = {
     height: 485
   }
 }
+console.log("size: ", json.users.length)
 
 var snapshot = function(users){
   var str;
-  for (var j = 300; j < 310; j++) {
+  for (var j = 780; j < 800; j++) {
     console.log(users.users[j].screen_name)
     users.users[j].prof_snapshot = 'images/snapshots/' + users.users[j].screen_name + '.png';
 
-    webshot('http://localhost:3000/screenshot/' + users.users[j].screen_name, 'images/snapshots/' + users.users[j].screen_name + '.png', options, function(err) {
+    webshot('http://localhost:3000/screenshot/' + users.users[j].screen_name, 'images/' + users.users[j].screen_name + '.png', options, function(err) {
       // screenshot now saved to google.png
     });
   }
@@ -35,3 +36,5 @@ var snapshot = function(users){
 //     if (err) throw err;
 //     console.log('file saved');
 // });
+
+// got 600
