@@ -1,7 +1,6 @@
 config*.js
 node_modules
-alData.json
-file.json
-goodcoLink.json
+*.json
+*.csv
 .DS_Store
 
