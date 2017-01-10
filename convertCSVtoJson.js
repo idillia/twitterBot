@@ -3,8 +3,11 @@ var fs = require('fs');
 var _ = require('underscore');
 
 
-var csvFilePath = './csv/INFJ_5848.csv';
-var jsonFilePathOutput = './json/twitterHandlers.json'
+// var csvFilePath = './csv/goodco_users.csv';
+// var jsonFilePathOutput = './json/goodco_random_users.json'
+
+var csvFilePath = './csv/ylenio_tweeted_goodco.csv';
+var jsonFilePathOutput = './json/ylenio_tweeted_goodco.json'
 
 
 // STEP 1: Conver CSV to JSON
@@ -17,10 +20,16 @@ const csv=require('csvtojson');
 csv()
 .fromFile(csvFilePath)
 .on('json',(jsonObj)=>{
+  var tH = [];
   array.push(jsonObj);
   var twitterHandlers = _.pluck(array, 'Screen name');
+  for(var i =0; i<twitterHandlers.length; i++) {
+    tH.push(twitterHandlers[i].slice(1,twitterHandlers.length)) 
+  }
 
-  fs.writeFile(jsonFilePathOutput, JSON.stringify(twitterHandlers, null, ' '), 'utf8', function(err) {
+    var uniqueUserList = _.uniq(tH);
+
+  fs.writeFile(jsonFilePathOutput, JSON.stringify(uniqueUserList, null, ' '), 'utf8', function(err) {
     if (err) throw err;
     // console.log('file saved');
   });

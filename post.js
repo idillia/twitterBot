@@ -44,10 +44,10 @@ function tweetStrenghCardWithMedia(users, i) {
     url = "http://goodco.company/" + screen_name;
 
     var tweet = {
-      status1: "Hi @" + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url,
-      status2: "Hey @" + screen_name + ", we have analyzed your twitter feed and created a psychometric profile for you. Is this correct? " + url,
-      status3: "Hey @" + screen_name + ", we created a personality profile for you. Does this really describe you? " + url,
-      status4: "Hey @" + screen_name + ", here is your hidden personality strength. Is this close to the truth? " + url
+      status1: "Hi @" + screen_name + ",we created a profile for you based on your friends’ answers! Is this accurate?" + url,
+      status2: "Hey @" + screen_name + ", we made a psychometric profile for you based on your Twitter! Is it accurate?" + url,
+      status3: "Hey @" + screen_name + ", we created a psychometric personality profile for you! Is it accurate?" + url,
+      status4: "Hey @" + screen_name + ", here are your personality strengths! Do you agree?" + url
 
     }
     console.log(tweet.status1);

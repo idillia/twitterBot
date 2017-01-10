@@ -8,7 +8,15 @@ var _ = require('underscore');
 
 
 
-var fields = ['id', 'screen_name', 'name', 'followers', 'creation_date', 'image_url', 'tweets'];
+// var ylenio_tweeted_goodco = require("./json/ylenio_tweeted_goodco");
+var ylenio_tweeted_goodco = require("./json/goodco_random_users1");
+
+
+console.log("LENGTH: ", ylenio_tweeted_goodco.length);
+
+
+
+var fields = ['id', 'screen_name', 'name', 'followers', 'account_creation_date', 'image_url', 'tweets', 'wordCount'];
 var csv;
 var userList = [];
 
@@ -34,11 +42,11 @@ var created6MonthMore = function(account_creation_date) {
   return difference > sixMonthsInMilis ? true : false;
 } 
 
-var formatDate = function(dates) {
-  return _.map(dates, function(date) {
-    return moment(date).format("lll");
-  }); 
-}
+// var formatDate = function(dates) {
+//   return _.map(dates, function(date) {
+//     return moment(date).format("lll");
+//   }); 
+// }
 
 var getIdFromTweets = function(tweetList) {
   var listOfUserIds = [];
@@ -48,47 +56,53 @@ var getIdFromTweets = function(tweetList) {
   return listOfUserIds;
 }
 
+
+var moreThan300Words = function(tweets) {
+  var countWords = 0;
+    for (var prop in tweets) {
+      countWords += tweets[prop].split(" ").length;
+    // console.log("WC: ", countWords)
+    }
+  return (countWords >=301) ? countWords : false;
+}
+
 // var isTweetsAlmostEveryday = function(tweetDates) {
 //   var differenceInDays = _.difference(utils.fithteenDaysBeforeArray(), utils.formatTweetDates(tweetDates));
 //   return differenceInDays.length <= 2 ? true : false;
 // }
 
-var tweetsParams = {
-  q: "personality test, these are my personal strengths!",
-  count: 30
-};
+
 
 //B: RETURN FILTERED TWITTER USER OBJECT 
 var filterUsers = function(listOfUsers, tweetDates) {
+  // console.log("obj", tweetDates)
+
   var userObj = {};
   if (listOfUsers) {
-    for (var i= 0; i <listOfUsers.length; i++) {
-      var userName = splitName(listOfUsers[i].name);
-      var folowersCount = followersLimit(listOfUsers[i].followers_count);
-      var creationDate = created6MonthMore(listOfUsers[i].created_at);
-      var profileImageUrl = listOfUsers[i].profile_image_url;
-      var profileImageUrlHttps = listOfUsers[i].profile_image_url_https;
-      var profileBackgroundImageUrl = listOfUsers[i].profile_background_image_url;
-      var profileBAckgroundImageUrlHttps = listOfUsers[i].profile_background_image_url_https;
-      var profileBannerUrl = listOfUsers[i].profile_banner_url;
-      // var isEveryday = isTweetsAlmostEveryday(tweetDates);
+      var userName = splitName(listOfUsers.name);
+      var folowersCount = followersLimit(listOfUsers.followers_count);
+      var creationDate = created6MonthMore(listOfUsers.created_at);
+      var profileImageUrl = listOfUsers.profile_image_url;
+      var profileImageUrlHttps = listOfUsers.profile_image_url_https;
+      var profileBackgroundImageUrl = listOfUsers.profile_background_image_url;
+      var profileBAckgroundImageUrlHttps = listOfUsers.profile_background_image_url_https;
+      var profileBannerUrl = listOfUsers.profile_banner_url;
+      var moreThan300 = moreThan300Words(tweetDates);
+      console.log("screen_name: ", listOfUsers.screen_name, "word count", moreThan300)
 
-      // if(userName && folowersCount && creationDate && userProfileImg && isEveryday){ 
-      // if(userName && creationDate){ 
-        console.log("GETTING list of users")
-        userObj.id = (listOfUsers[i].id).toString();
-        userObj.screen_name = listOfUsers[i].screen_name;
-        userObj.name = listOfUsers[i].name;
-        userObj.followers = listOfUsers[i].followers_count;
-        userObj.creation_date = listOfUsers[i].created_at;
+      if(moreThan300){ 
+        console.log("Saving list of users")
+        userObj.id = (listOfUsers.id).toString();
+        userObj.screen_name = listOfUsers.screen_name;
+        userObj.name = listOfUsers.name;
+        userObj.followers = listOfUsers.followers_count;
+        userObj.account_creation_date = listOfUsers.created_at;
         userObj.image_url = profileImageUrl;
         userObj.tweets = tweetDates;
-        // userObj.tweetTexts = tweetTexts;
-      // }  
-
-    }
+        userObj.wordCount = moreThan300;
+      }  
   }
-  console.log(userObj);
+  // console.log(userObj);
   return userObj;
 }
 //E: RETURN FILTERED TWITTER USER OBJECT
@@ -96,51 +110,47 @@ var filterUsers = function(listOfUsers, tweetDates) {
 
 
 //B: GET TWEETS, FIND USER, FILTER
-T.get('search/tweets', tweetsParams) // Gett all tweets that has a specific key words
-  .catch(function (err) {
-    console.log('caught error', err.stack)
-  })
-  .then(function(result) {
-    var userIds = getIdFromTweets(result.data); // Get list of usersIds
-    return userIds;
-  })
-  .then(function (res) {
-    // console.log("is result passed: ", res);
-    for(var i = 0; i<res.length; i++) {
-      // console.log("user_id: ", res[i]); 
+
+
+
+
+    for(var i = 0; i<260; i++) {
       var timelineParams = {
-        user_id: res[i],
-        count: 200
+        screen_name: ylenio_tweeted_goodco[i],
+        count: 80
       };
       T.get('statuses/user_timeline', timelineParams)
         .catch(function (err) {
           console.log('caught error', err.stack)
         })
-        .then (function(result) {        
-          var currentUserInfo = result.data[0].user;
+        .then (function(result) {    
+          // console.log("er", result.data)
+          if(!(result.data.errors)) { 
+            var currentUserInfo = result.data[0].user;
 
-          var tweetDates = [];
-          var obj = {};
-          for (var i = 0; i<result.data.length; i++) {
-            // console.log(result.data[i].text)
-            var dataTime = result.data[i].created_at;
+            var tweetDates = [];
+            var obj = {};
+            for (var i = 0; i<result.data.length; i++) {
+              // console.log(result.data[i].text)
+              var dataTime = result.data[i].created_at;
 
-            tweetDates.push(obj[dataTime] = result.data[i].text);
-          }
-          // console.log("obj", obj)
-          // console.log("tweet dates: ", tweetDates)
-          // var tweetTexts = [];
-          // for (var i = 0; i<result.data.length; i++) {
-          //   tweetDates.push(result.data[i].text);
-          // }
-          var filteredUsers = filterUsers([currentUserInfo], obj);
-          if(filteredUsers.hasOwnProperty('id')) {
-            userList.push(filteredUsers);
-          }
+              tweetDates.push(obj[dataTime] = result.data[i].text);
+            }
+            var filteredUsers = filterUsers(currentUserInfo, obj);
+            if(filteredUsers.hasOwnProperty('id')) {
+              userList.push(filteredUsers);
+            }
+        } else {
+          console.log("some error happend")
+        }  
         })
     }
 
-  // //B: DISPLAY LIMIT STATUS
+
+ //B: DISPLAY LIMIT STATUS
+
+
+
   T.get('application/rate_limit_status')
     .catch(function(err) {
       console.log("limit_rate_error: ", err.stack)
@@ -149,21 +159,19 @@ T.get('search/tweets', tweetsParams) // Gett all tweets that has a specific key 
       console.log("SEARCH_TWEETS_LIMIT: ",  JSON.stringify(result.data.resources.search));
       console.log("STATUSES_USER_TIMELINE: ",JSON.stringify(result.data.resources.statuses['/statuses/user_timeline']));
     });
-  //E: DISPLAY LIMIT STATUS
 
-
-  });
 // //B: GET TWEETS, FIND USER, FILTER  
 
 //B: SAVE TO JSON FILE
 setTimeout(function(){ 
   // console.log(userList)
   // csv = json2csv({data: userList, fields:fields});
-  fs.writeFile('twitterUsersForYlenio.json', JSON.stringify(userList, null, ' '), 'utf8', function(err) {
+  // fs.writeFile('./json/twitterUsersForYlenio.json', JSON.stringify(userList, null, ' '), 'utf8', function(err) {
+  fs.writeFile('./json/twitterUsersForYlenio.json', JSON.stringify(userList, null, ' '), 'utf8', function(err) {
     if (err) throw err;
-    console.log('file saved');
+    console.log('ylenio users are saved into twitterUsersForYlenio');
   });
-}, 1000);
+}, 20000);
 //E: SAVE TO JSON FILE
 
 

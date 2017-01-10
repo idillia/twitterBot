@@ -1,14 +1,29 @@
-var _ = require('underscore');
+var tweets = require("./json/tweets")[4];
+
+var moreThan300Words = function(tweets) {
+  var countWords = 0;
+    for (var prop in tweets) {
+      if(prop == "tweets") {
+        for (var key in tweets[prop]) {
+          countWords += tweets[prop][key].split(" ").length;
+        }
+      }
+    }
+  console.log(countWords)
+  return (countWords >=301) ? countWords : false;
+}
+
+moreThan300Words(tweets)
 
 
-var a = _.difference([1, 2, 3, 4, 5], [5, 2, 10, 8, 11, 7], [5,4,99,0]);
-console.log(a);
 
 
 
+// var _ = require('underscore');
 
 
-
+// var a = _.difference([1, 2, 3, 4, 5], [5, 2, 10, 8, 11, 7], [5,4,99,0]);
+// console.log(a);
 
 
 
