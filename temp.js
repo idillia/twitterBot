@@ -1,30 +1,81 @@
-var twitterHandlers = require("./json/twitterHandlers");
+var _ = require('underscore');
 
-var min = 0;
-var max = 100;
-var interval;
-var limitHundred;
 
-console.log(twitterHandlers.length);
+var a = _.difference([1, 2, 3, 4, 5], [5, 2, 10, 8, 11, 7], [5,4,99,0]);
+console.log(a);
 
 
 
 
-  interval = setInterval(function() {
 
-    if(max < twitterHandlers.length) {
 
-      limitHundred = twitterHandlers.slice(min,max).join(', ');
-      console.log(min," " ,max);
 
-      min = max;
-      max +=100; 
-    } else if((twitterHandlers.length- max + 100 ) <100) {
-      limitHundred = twitterHandlers.slice(min,twitterHandlers.length).join(', ');
-      console.log(min," " ,twitterHandlers.length);
-      clearInterval(interval);
-    }
-  }, 500);
+
+
+// var str = 'http://localhost:3000/scrappymcgyver';
+// var str1 = 'http://localhost:3000/scrappymcgyver/';
+// re = '([^/]*)$';
+// re1 = '([^/]*)/$';
+
+// console.log("str ", str.match(re)[1]);
+// console.log("str1 ", str1.match(re1)[1]);
+
+
+
+//   var _ = require('underscore');
+
+//   var screen_name = '', url = '';
+  
+
+//     function chooseRandomTweet(){
+//       var rand;
+//       var tweet = [
+//         "Hi " + screen_name + ", based on your friends’ answers we have created a strength profile for you. Is this accurate? " + url,
+//         "Hey " + screen_name + ", we have analyzed your twitter feed and created a psychometric profile for you. Is this correct? " + url,
+//         "Hey " + screen_name + ", we created a personality profile for you. Does this really describe you? " + url,
+//         "Hey " + screen_name + ", here is your hidden personality strength. Is this close to the truth? " + url
+//       ]
+//       rand = _.random(0, tweet.length);
+
+//       console.log( tweet[rand]);
+//     }
+
+
+
+// chooseRandomTweet();
+
+
+
+
+
+
+// var twitterHandlers = require("./json/twitterHandlers");
+
+// var min = 0;
+// var max = 100;
+// var interval;
+// var limitHundred;
+
+// console.log(twitterHandlers.length);
+
+
+
+
+//   interval = setInterval(function() {
+
+//     if(max < twitterHandlers.length) {
+
+//       limitHundred = twitterHandlers.slice(min,max).join(', ');
+//       console.log(min," " ,max);
+
+//       min = max;
+//       max +=100; 
+//     } else if((twitterHandlers.length- max + 100 ) <100) {
+//       limitHundred = twitterHandlers.slice(min,twitterHandlers.length).join(', ');
+//       console.log(min," " ,twitterHandlers.length);
+//       clearInterval(interval);
+//     }
+//   }, 500);
 
 
 
